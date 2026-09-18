@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.0-beta.3
+
+### Added
+- Dedicated TargetCopy Debug panel opened with `/tc debug`.
+- Structured diagnostic report for addon/client version, build, interface, API capabilities, Quick Copy state, combat state, current target, and SavedVariables state.
+- Debug report Refresh and Select All controls.
+- Draggable and closable diagnostics window.
+
+### Changed
+- `/tc debug` now opens the dedicated diagnostics panel instead of printing the full diagnostic report to chat.
+
+## 1.0.0-beta.2
+
+### Fixed
+- Addon source layout is now aligned with the release packager so tagged builds can be packaged correctly from the repository root.
+
+
 ## 1.0.0-beta.1
 
 ### Added
