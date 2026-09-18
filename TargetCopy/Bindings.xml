@@ -1,5 +1,5 @@
 <Bindings>
-  <Binding name="TARGETCOPY_QUICKCOPY" header="TARGETCOPY">
+  <Binding name="TARGETCOPY_QUICKCOPY" category="Target Copy">
     TargetCopy_QuickCopyBinding()
   </Binding>
 </Bindings>

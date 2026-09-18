@@ -29,6 +29,17 @@ end
 local function Btn(label,w,h)
     local b=CreateFrame("Button",nil,f,"UIPanelButtonTemplate"); b:SetSize(w or 140,h or 28); b:SetText(label); return b
 end
+
+local function RaidMarkerBtn(label,w,h,index)
+    local b=CreateFrame("Button",nil,f,"UIPanelButtonTemplate,SecureActionButtonTemplate")
+    b:SetSize(w or 140,h or 28)
+    b:SetText(label)
+    b:RegisterForClicks("AnyUp")
+    b:SetAttribute("type", "raidtarget")
+    b:SetAttribute("unit", "target")
+    b:SetAttribute("raidtarget", index)
+    return b
+end
 local function Enabled(b,v) if v then b:Enable(); b:SetAlpha(1) else b:Disable(); b:SetAlpha(.45) end end
 local function Status(v) UI.status:SetText(v or "") end
 
@@ -48,21 +59,20 @@ UI.target=Btn("Generate /target",145); UI.target:SetPoint("LEFT",UI.copy,"RIGHT"
 local r=Txt("GameFontNormalSmall","RAID MARKER"); r:SetPoint("TOPLEFT",20,-207)
 UI.markerButtons={}
 for i=1,8 do
-    local b=Btn(NS.Marker.names[i],70,27)
+    local b=RaidMarkerBtn(NS.Marker.names[i],70,27,i)
     local row=math.floor((i-1)/4); local col=(i-1)%4
     b:SetPoint("TOPLEFT",20+col*77,-228-row*34)
-    b:SetScript("OnClick",function()
+    b:SetScript("PostClick",function()
         UI.selectedMark=i
-        local ok,err=NS.Marker:Set("target",i)
-        Status(ok and (NS.Marker.names[i].." assigned") or ("Marker unavailable: "..tostring(err)))
+        Status(NS.Marker.names[i].." marker requested")
         UI:Refresh()
     end)
     UI.markerButtons[i]=b
 end
-UI.clear=Btn("Clear Marker",145,26); UI.clear:SetPoint("TOPLEFT",20,-301)
-UI.clear:SetScript("OnClick",function()
-    local ok,err=NS.Marker:Set("target",0)
-    Status(ok and "Marker cleared" or ("Clear unavailable: "..tostring(err))); UI:Refresh()
+UI.clear=RaidMarkerBtn("Clear Marker",145,26,0); UI.clear:SetPoint("TOPLEFT",20,-301)
+UI.clear:SetScript("PostClick",function()
+    Status("Clear marker requested")
+    UI:Refresh()
 end)
 
 local m=Txt("GameFontNormalSmall","MACRO BUILDER"); m:SetPoint("TOPLEFT",20,-345)
@@ -97,8 +107,7 @@ function UI:Refresh()
     local name=exists and NS.Unit:GetName("target") or nil
     self.name:SetText(name or "No target selected")
     self.meta:SetText(exists and NS.Unit:GetMeta("target") or "Select a unit to enable target actions.")
-    local current=exists and NS.Marker:Get("target") or 0
-    self.mark:SetText(current>0 and ("["..NS.Marker.names[current].."]") or "")
+    self.mark:SetText("")
     Enabled(self.copy,exists and name~=nil); Enabled(self.target,exists and name~=nil)
     local canMark=exists and NS.Compat:CanRaidMark()
     for _,b in ipairs(self.markerButtons) do Enabled(b,canMark) end
@@ -132,8 +141,9 @@ UI.select:SetScript("OnClick",function()
     UI:Refresh(); UI.preview:SetFocus(); UI.preview:HighlightText(); Status("Macro selected - press Ctrl+C")
 end)
 UI.create:SetScript("OnClick",function()
-    local ok,result=NS.Macro:CreateOrUpdate(UI:BuildPreview())
-    if ok then Status("Macro "..string.lower(tostring(result))..": "..((NS.db and NS.db.macroName) or "TC_Target"))
+    local targetName=UI:GetTarget()
+    local ok,result,macroName=NS.Macro:CreateOrUpdate(UI:BuildPreview(),targetName)
+    if ok then Status("Macro "..string.lower(tostring(result))..": "..tostring(macroName))
     elseif result=="COMBAT" then Status("Create Macro unavailable during combat.")
     else Status("Create Macro failed: "..tostring(result)) end
     UI:Refresh()
