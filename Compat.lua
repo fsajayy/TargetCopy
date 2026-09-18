@@ -14,13 +14,33 @@ function C:GetBindingText()
     return (ok and key and key ~= "") and key or "Unbound"
 end
 
-function C:Debug()
+function C:GetDebugReport()
     local version, build, _, interface = GetBuildInfo()
-    NS:Print("Diagnostics")
-    NS:Print("Addon="..tostring(NS.version).." Client="..tostring(version).." Build="..tostring(build).." Interface="..tostring(interface))
-    NS:Print("SetRaidTarget="..tostring(self:CanRaidMark()).." CreateMacro="..tostring(self:CanCreateMacro()).." EditMacro="..tostring(self:CanEditMacro()))
-    NS:Print("QuickCopy="..tostring(NS.db and NS.db.quickCopy.enabled).." Mode="..tostring(NS.db and NS.db.quickCopy.mode).." Key="..self:GetBindingText())
-    NS:Print("Combat="..tostring(self:InCombat()))
     local name, err = NS.Unit:GetName("target")
-    NS:Print("Target="..tostring(name or err))
+
+    local lines = {
+        "TargetCopy Diagnostics",
+        "----------------------",
+        "Addon Version: " .. tostring(NS.version),
+        "Client Version: " .. tostring(version),
+        "Build: " .. tostring(build),
+        "Interface: " .. tostring(interface),
+        "",
+        "Capabilities",
+        "SetRaidTarget: " .. tostring(self:CanRaidMark()),
+        "CreateMacro: " .. tostring(self:CanCreateMacro()),
+        "EditMacro: " .. tostring(self:CanEditMacro()),
+        "",
+        "Quick Copy",
+        "Enabled: " .. tostring(NS.db and NS.db.quickCopy.enabled),
+        "Mode: " .. tostring(NS.db and NS.db.quickCopy.mode),
+        "Key: " .. self:GetBindingText(),
+        "",
+        "Runtime",
+        "Combat: " .. tostring(self:InCombat()),
+        "Target: " .. tostring(name or err),
+        "SavedVariables: " .. tostring(NS.db ~= nil),
+    }
+
+    return table.concat(lines, "\n")
 end

@@ -81,7 +81,7 @@ SlashCmdList["TARGETCOPY"] = function(msg)
         NS.UI:ResetPosition()
         NS.FloatingButton:ResetPosition()
     elseif msg == "debug" then
-        NS.Compat:Debug()
+        NS.DebugPanel:Show()
     elseif msg == "help" then
         NS:Print("/tc - toggle | settings | quick | reset | debug | help")
     else

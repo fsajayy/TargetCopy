@@ -10,7 +10,7 @@ required = [
     "Modules\\Unit.lua", "Modules\\Marker.lua",
     "Modules\\Macro.lua", "Modules\\QuickCopy.lua",
     "UI\\MainWindow.lua", "UI\\QuickCopyPopup.lua",
-    "UI\\FloatingButton.lua", "UI\\Settings.lua",
+    "UI\\FloatingButton.lua", "UI\\Settings.lua", "UI\\DebugPanel.lua",
     "Bindings.lua", "Bindings.xml"
 ]
 
@@ -19,7 +19,7 @@ toc_required = [
     "Modules\\Unit.lua", "Modules\\Marker.lua",
     "Modules\\Macro.lua", "Modules\\QuickCopy.lua",
     "UI\\MainWindow.lua", "UI\\QuickCopyPopup.lua",
-    "UI\\FloatingButton.lua", "UI\\Settings.lua",
+    "UI\\FloatingButton.lua", "UI\\Settings.lua", "UI\\DebugPanel.lua",
     "Bindings.lua"
 ]
 
