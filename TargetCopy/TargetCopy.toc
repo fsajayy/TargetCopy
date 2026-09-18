@@ -15,4 +15,3 @@ UI\QuickCopyPopup.lua
 UI\FloatingButton.lua
 UI\Settings.lua
 Bindings.lua
-Bindings.xml
