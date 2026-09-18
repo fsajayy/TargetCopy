@@ -1,0 +1,7 @@
+package-as: TargetCopy
+ignore:
+  - .github
+  - .gitignore
+  - README.md
+  - RELEASE.md
+  - tests

@@ -1,0 +1,5 @@
+<Bindings>
+  <Binding name="TARGETCOPY_QUICKCOPY" header="TARGETCOPY">
+    TargetCopy_QuickCopyBinding()
+  </Binding>
+</Bindings>

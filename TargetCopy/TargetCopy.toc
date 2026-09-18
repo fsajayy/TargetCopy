@@ -1,0 +1,18 @@
+## Interface: 16001
+## Title: TargetCopy
+## Notes: Fast target-name copying, raid markers, and macro creation for WoW Forever.
+## Version: @project-version@
+## SavedVariables: TargetCopyDB
+
+Core.lua
+Compat.lua
+Modules\Unit.lua
+Modules\Marker.lua
+Modules\Macro.lua
+Modules\QuickCopy.lua
+UI\MainWindow.lua
+UI\QuickCopyPopup.lua
+UI\FloatingButton.lua
+UI\Settings.lua
+Bindings.lua
+Bindings.xml
