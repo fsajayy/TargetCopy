@@ -42,5 +42,25 @@ function C:GetDebugReport()
         "SavedVariables: " .. tostring(NS.db ~= nil),
     }
 
+    local sv = NS.svDebug or {}
+
+    table.insert(lines, "")
+    table.insert(lines, "SavedVariables Lifecycle")
+
+    for _, stage in ipairs({"BEFORE_INIT", "AFTER_INIT", "PLAYER_LOGIN"}) do
+        local state = sv[stage]
+        if state then
+            table.insert(lines,
+                stage
+                .. ": db=" .. tostring(state.dbType)
+                .. " quickCopy=" .. tostring(state.quickCopyType)
+                .. " enabled=" .. tostring(state.enabled)
+                .. " mode=" .. tostring(state.mode)
+            )
+        else
+            table.insert(lines, stage .. ": NOT CAPTURED")
+        end
+    end
+
     return table.concat(lines, "\n")
 end

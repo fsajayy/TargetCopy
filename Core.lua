@@ -32,6 +32,20 @@ function NS:Print(msg)
     end
 end
 
+
+local function DebugDBState(stage)
+    local db = TargetCopyDB
+    local qc = type(db) == "table" and db.quickCopy or nil
+
+    NS.svDebug = NS.svDebug or {}
+    NS.svDebug[stage] = {
+        dbType = type(db),
+        quickCopyType = type(qc),
+        enabled = type(qc) == "table" and qc.enabled or nil,
+        mode = type(qc) == "table" and qc.mode or nil,
+    }
+end
+
 function NS:InitDB()
     TargetCopyDB = TargetCopyDB or {}
     MergeDefaults(defaults, TargetCopyDB)
@@ -50,10 +64,13 @@ events:RegisterEvent("PLAYER_REGEN_DISABLED")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == NS.name then
+        DebugDBState("BEFORE_INIT")
         NS:InitDB()
+        DebugDBState("AFTER_INIT")
         if NS.UI then NS.UI:RestorePosition() end
         if NS.FloatingButton then NS.FloatingButton:ApplySettings() end
     elseif event == "PLAYER_LOGIN" then
+        DebugDBState("PLAYER_LOGIN")
         if NS.UI then NS.UI:Refresh() end
         if NS.FloatingButton then NS.FloatingButton:ApplySettings() end
         NS:Print("Loaded. /tc to open; /tc debug for diagnostics.")
