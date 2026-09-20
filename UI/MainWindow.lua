@@ -1,12 +1,12 @@
 local NS = TargetCopy
 NS.UI = {}
 local UI = NS.UI
-UI.mode = "target"
-UI.selectedMark = 8
+UI.selectedMark = 0
 
 local f = CreateFrame("Frame","TargetCopyWindow",UIParent,"BackdropTemplate")
 UI.frame = f
-f:SetSize(350,545); f:SetPoint("CENTER"); f:SetFrameStrata("DIALOG")
+
+f:SetSize(350,550); f:SetPoint("CENTER"); f:SetFrameStrata("DIALOG")
 f:SetClampedToScreen(true); f:SetMovable(true); f:EnableMouse(true); f:RegisterForDrag("LeftButton"); f:Hide()
 
 if f.SetBackdrop then
@@ -30,8 +30,68 @@ local function Btn(label,w,h)
     local b=CreateFrame("Button",nil,f,"UIPanelButtonTemplate"); b:SetSize(w or 140,h or 28); b:SetText(label); return b
 end
 
-local function RaidMarkerBtn(label,w,h)
-    local b=Btn(label,w,h)
+local function MarkerButton(index,size)
+    local b=CreateFrame("Button",nil,f,"BackdropTemplate")
+    b:SetSize(size or 54,size or 54)
+
+    if b.SetBackdrop then
+        b:SetBackdrop({
+            bgFile="Interface\\Buttons\\WHITE8X8",
+            edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+            edgeSize=10,
+            insets={left=2,right=2,top=2,bottom=2}
+        })
+        b:SetBackdropColor(.03,.03,.03,.75)
+        b:SetBackdropBorderColor(.30,.30,.30,.85)
+    end
+
+    local icon=b:CreateTexture(nil,"ARTWORK")
+    icon:SetSize(30,30)
+    icon:SetPoint("CENTER",0,0)
+    icon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
+    SetRaidTargetIconTexture(icon,index)
+
+
+    local selected=CreateFrame("Frame",nil,b,"BackdropTemplate")
+    selected:SetPoint("TOPLEFT",-2,2)
+    selected:SetPoint("BOTTOMRIGHT",2,-2)
+    selected:SetFrameLevel(b:GetFrameLevel()+2)
+
+    if selected.SetBackdrop then
+        selected:SetBackdrop({
+            edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+            edgeSize=12
+        })
+        selected:SetBackdropBorderColor(1,.82,.15,1)
+    end
+
+    selected:Hide()
+
+    b.markerIndex=index
+    b.markerIcon=icon
+    b.selectedTexture=selected
+
+    b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square","ADD")
+
+    b:SetScript("OnEnter",function(self)
+        GameTooltip:SetOwner(self,"ANCHOR_RIGHT")
+        GameTooltip:SetText(NS.Marker.names[index])
+        GameTooltip:AddLine("Macro command: /tm "..index,1,1,1)
+        GameTooltip:Show()
+    end)
+
+    b:SetScript("OnLeave",function()
+        GameTooltip:Hide()
+    end)
+
+    function b:SetSelected(value)
+        if value then
+            self.selectedTexture:Show()
+        else
+            self.selectedTexture:Hide()
+        end
+    end
+
     return b
 end
 local function Enabled(b,v) if v then b:Enable(); b:SetAlpha(1) else b:Disable(); b:SetAlpha(.45) end end
@@ -51,34 +111,34 @@ UI.copy=Btn("Copy Name",145); UI.copy:SetPoint("TOPLEFT",20,-159)
 UI.target=Btn("Generate /target",145); UI.target:SetPoint("LEFT",UI.copy,"RIGHT",10,0)
 
 local r=Txt("GameFontNormalSmall","MACRO MARK"); r:SetPoint("TOPLEFT",20,-207)
+
+UI.noMark=Btn("Target Only",92,22)
+UI.noMark:SetPoint("TOPRIGHT",-20,-200)
+UI.noMark:SetScript("OnClick",function()
+    UI.selectedMark=0
+    Status("Target-only macro selected")
+    UI:Refresh()
+end)
+
 UI.markerButtons={}
 for i=1,8 do
-    local b=RaidMarkerBtn(NS.Marker.names[i],70,27)
-    local row=math.floor((i-1)/4); local col=(i-1)%4
-    b:SetPoint("TOPLEFT",20+col*77,-228-row*34)
+    local b=MarkerButton(i,54)
+    local row=math.floor((i-1)/4)
+    local col=(i-1)%4
+    b:SetPoint("TOPLEFT",28+col*75,-232-row*58)
     b:SetScript("OnClick",function()
         UI.selectedMark=i
-        Status(NS.Marker.names[i].." selected for macro")
+        Status(NS.Marker.names[i].." selected")
         UI:Refresh()
     end)
     UI.markerButtons[i]=b
 end
 
-local markerNote=Txt("GameFontHighlightSmall","Direct marking unavailable on this client.")
-markerNote:SetPoint("TOPLEFT",20,-301)
+local markerNote=Txt("GameFontHighlightSmall","Selected marker is added to the generated macro.")
+markerNote:SetPoint("TOPLEFT",20,-350)
 
-local m=Txt("GameFontNormalSmall","MACRO BUILDER"); m:SetPoint("TOPLEFT",20,-345)
-UI.modeButtons={}
-local modes={{"Target","target",90},{"Mark","mark",90},{"Target + Mark","both",112}}
-for i,d in ipairs(modes) do
-    local b=Btn(d[1],d[3],25)
-    if i==1 then b:SetPoint("TOPLEFT",20,-366) else b:SetPoint("LEFT",UI.modeButtons[i-1],"RIGHT",5,0) end
-    b:SetScript("OnClick",function() UI.mode=d[2]; UI:Refresh() end)
-    UI.modeButtons[i]=b
-end
-
-local ph=Txt("GameFontNormalSmall","PREVIEW"); ph:SetPoint("TOPLEFT",20,-404)
-local bg=CreateFrame("Frame",nil,f,"BackdropTemplate"); bg:SetSize(305,58); bg:SetPoint("TOPLEFT",20,-420)
+local ph=Txt("GameFontNormalSmall","PREVIEW"); ph:SetPoint("TOPLEFT",20,-375)
+local bg=CreateFrame("Frame",nil,f,"BackdropTemplate"); bg:SetSize(305,62); bg:SetPoint("TOPLEFT",20,-391)
 if bg.SetBackdrop then
     bg:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=12,insets={left=3,right=3,top=3,bottom=3}})
     bg:SetBackdropColor(.03,.03,.03,.9)
@@ -87,13 +147,20 @@ UI.preview=CreateFrame("EditBox",nil,bg); UI.preview:SetPoint("TOPLEFT",8,-7); U
 UI.preview:SetMultiLine(true); UI.preview:SetAutoFocus(false); UI.preview:SetFontObject("ChatFontNormal"); UI.preview:SetMaxLetters(255)
 UI.preview:SetScript("OnEscapePressed",function(self) self:ClearFocus() end)
 
-UI.select=Btn("Select / Copy",145); UI.select:SetPoint("TOPLEFT",20,-488)
+UI.select=Btn("Select / Copy",145); UI.select:SetPoint("TOPLEFT",20,-465)
 UI.create=Btn("Create Macro",145); UI.create:SetPoint("LEFT",UI.select,"RIGHT",10,0)
 local sep=f:CreateTexture(nil,"ARTWORK"); sep:SetColorTexture(.35,.28,.18,.65); sep:SetSize(305,1); sep:SetPoint("BOTTOMLEFT",20,31)
 UI.status=Txt("GameFontHighlightSmall","Ready"); UI.status:SetPoint("BOTTOMLEFT",20,14); UI.status:SetWidth(305); UI.status:SetJustifyH("LEFT")
 
 function UI:GetTarget() return NS.Unit:GetName("target") end
-function UI:BuildPreview() return NS.Macro:Build(self.mode,self:GetTarget() or "",self.selectedMark) end
+function UI:BuildPreview()
+    local name=self:GetTarget()
+    if not name then return "" end
+    if self.selectedMark and self.selectedMark > 0 then
+        return NS.Macro:Build("both",name,self.selectedMark)
+    end
+    return NS.Macro:Build("target",name,0)
+end
 function UI:Refresh()
     local exists=NS.Unit:Exists("target")
     local name=exists and NS.Unit:GetName("target") or nil
@@ -101,6 +168,12 @@ function UI:Refresh()
     self.meta:SetText(exists and NS.Unit:GetMeta("target") or "Select a unit to enable target actions.")
     self.mark:SetText("")
     Enabled(self.copy,exists and name~=nil); Enabled(self.target,exists and name~=nil)
+    Enabled(self.noMark,true)
+    self.noMark:LockHighlight()
+    if self.selectedMark ~= 0 then self.noMark:UnlockHighlight() end
+    for i,b in ipairs(self.markerButtons) do
+        b:SetSelected(self.selectedMark == i)
+    end
     for _,b in ipairs(self.markerButtons) do Enabled(b,true) end
     local body=self:BuildPreview(); self.preview:SetText(body)
     Enabled(self.create,body~="" and NS.Compat:CanCreateMacro() and not NS.Compat:InCombat())
