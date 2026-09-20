@@ -210,42 +210,42 @@ identified in the audited baseline.
   Module                    Primary responsibility  Assessment
   ------------------------- ----------------------- -----------------------
   `Core.lua`                lifecycle, DB           ACCEPTABLE
-                            initialization, slash   
-                            routing                 
+                            initialization, slash
+                            routing
 
   `Compat.lua`              capability/runtime      HEALTHY
-                            compatibility helpers   
-                            and diagnostics         
+                            compatibility helpers
+                            and diagnostics
 
   `Modules/Unit.lua`        safe unit/name/meta     HEALTHY
-                            access                  
+                            access
 
   `Modules/Marker.lua`      marker names plus       STALE SURFACE
-                            legacy/direct marker    
-                            helpers                 
+                            legacy/direct marker
+                            helpers
 
   `Modules/Macro.lua`       macro body generation   HEALTHY
-                            and create/update       
+                            and create/update
 
   `Modules/QuickCopy.lua`   Quick Copy text         HEALTHY
-                            generation and trigger  
+                            generation and trigger
 
   `UI/MainWindow.lua`       main UI and feature     P2 COUPLING RISK
-                            integration             
+                            integration
 
   `UI/QuickCopyPopup.lua`   Quick Copy popup        HEALTHY
-                            lifecycle               
+                            lifecycle
 
   `UI/FloatingButton.lua`   reusable floating       HEALTHY
-                            launcher and position   
+                            launcher and position
 
   `UI/Settings.lua`         user configuration UI   ACCEPTABLE
 
   `UI/DebugPanel.lua`       runtime diagnostics     HEALTHY
-                            presentation            
+                            presentation
 
   `Bindings.lua`            Quick Copy binding      HEALTHY
-                            entry point             
+                            entry point
   -------------------------------------------------------------------------
 
 ### 5.2 Dependency observations
@@ -493,7 +493,7 @@ works.
   Contract                Verification            Result
   ----------------------- ----------------------- -----------------------
   Addon load on Forever   RUNTIME VERIFIED        PASS
-  1.60.1                                          
+  1.60.1
 
   `/tc debug`             RUNTIME VERIFIED        PASS
 
@@ -502,60 +502,60 @@ works.
   Quick Copy keybind      RUNTIME VERIFIED        PASS
 
   Quick Copy `target`     RUNTIME VERIFIED        PASS
-  output                                          
+  output
 
   Macro preview           RUNTIME VERIFIED        PASS
-  generation                                      
+  generation
 
   Create macro            RUNTIME VERIFIED        PASS
 
   Update existing macro   RUNTIME VERIFIED        PASS
 
   Duplicate avoided       RUNTIME VERIFIED        PASS
-  during update                                   
+  during update
 
   Updated macro body      RUNTIME VERIFIED        PASS
-  correct                                         
+  correct
 
   `/tm n` through chat    RUNTIME VERIFIED        PASS
 
   Generated `/tm n` macro RUNTIME VERIFIED        PASS
-  execution                                       
+  execution
 
   Generated target +      RUNTIME VERIFIED        PASS
-  marker macro                                    
+  marker macro
 
   Create Macro disabled   RUNTIME VERIFIED        PASS
-  in combat                                       
+  in combat
 
   Direct raid-marker      RUNTIME VERIFIED        **FAIL**
-  button                                          
+  button
 
   Marker button changes   RUNTIME VERIFIED        PASS
-  macro selection/preview                         
+  macro selection/preview
 
   Settings write to       RUNTIME VERIFIED        PASS
-  runtime DB                                      
+  runtime DB
 
   Runtime DB serialized   RUNTIME VERIFIED        PASS
-  on normal Exit Game                             
+  on normal Exit Game
 
   Main-window custom      RUNTIME VERIFIED        PASS
-  position serialized to                          
-  disk                                            
+  position serialized to
+  disk
 
   Persisted Quick Copy    RUNTIME VERIFIED        **FAIL**
-  values restored at                              
-  fresh startup                                   
+  values restored at
+  fresh startup
 
   Quick Copy persistence  RUNTIME VERIFIED        **FAIL**
-  across `/reload`                                
+  across `/reload`
 
   Quick Copy persistence  RUNTIME VERIFIED        **FAIL**
-  across logout/login                             
+  across logout/login
 
   `Marker:Set()` direct   RUNTIME NOT TESTED      UNREFERENCED
-  helper                                          
+  helper
 
   `Marker:Get()` helper   RUNTIME NOT TESTED      UNREFERENCED
   -----------------------------------------------------------------------
@@ -640,7 +640,7 @@ Do not classify this as a general "SavedVariables do not save" defect.
                                                                     needed
 
   PPB-02 / PPB-15   `macroName` persisted but no  STATIC VERIFIED   DEFER
-                    active consumer                                 
+                    active consumer
 
   PPB-03 / PPB-14   `Marker:Set()` exists but is  STATIC VERIFIED;  DEFER; may be
                     unreferenced                  runtime not       used only as
@@ -648,36 +648,36 @@ Do not classify this as a general "SavedVariables do not save" defect.
                                                                     experiment
 
   PPB-04 / PPB-13   `Marker:Get()` exists but is  STATIC VERIFIED;  DEFER
-                    unreferenced                  runtime not       
-                                                  tested            
+                    unreferenced                  runtime not
+                                                  tested
 
   PPB-05            Validator primarily           STATIC VERIFIED   DEFER
-                    structural/package-oriented                     
+                    structural/package-oriented
 
   PPB-06 / PPB-12   `MainWindow.lua` has elevated STATIC VERIFIED   ACCEPT for beta.4
-                    integration responsibility                      
+                    integration responsibility
 
   PPB-07            Modular separation exists     STATIC VERIFIED   ACCEPT
 
   PPB-08            Event-driven architecture     STATIC VERIFIED   ACCEPT
 
   PPB-09            No `OnUpdate` polling         STATIC VERIFIED   ACCEPT
-                    identified                                      
+                    identified
 
   PPB-10            Published marker UI uses      STATIC VERIFIED   Implementation
                     secure-action implementation                    exists; runtime
                                                                     path fails
 
   PPB-11 / PPB-17   Correctly-shaped existing DB  STATIC VERIFIED   ACCEPT
-                    values are preserved by                         
-                    `MergeDefaults()`                               
+                    values are preserved by
+                    `MergeDefaults()`
 
   PPB-16            `UI.mark` display surface     STATIC VERIFIED   DEFER
-                    exists but is cleared during                    
-                    refresh                                         
+                    exists but is cleared during
+                    refresh
 
   PPB-18            Missing DB fields are         STATIC VERIFIED   ACCEPT
-                    recursively hydrated                            
+                    recursively hydrated
 
   PPB-19            Wrong-type nested persisted   STATIC VERIFIED   ACCEPT for
                     values can be replaced by                       current schema;
@@ -685,15 +685,15 @@ Do not classify this as a general "SavedVariables do not save" defect.
                                                                     consideration
 
   PPB-20            Non-additive future schema    STATIC ANALYSIS   ACCEPT AS POLICY
-                    changes require explicit                        
-                    migration/version strategy                      
+                    changes require explicit
+                    migration/version strategy
 
   PPB-21            Destructive/transformative    STATIC ANALYSIS   ACCEPT AS POLICY
-                    migration requires                              
-                    rollback/downgrade policy                       
+                    migration requires
+                    rollback/downgrade policy
 
   PPB-22            Unknown persisted keys        STATIC VERIFIED   ACCEPT
-                    survive default hydration                       
+                    survive default hydration
 
   PPB-23            Direct raid-marker button     RUNTIME VERIFIED  **P1 ---
                     does not mark target                            EXPERIMENT →
@@ -705,7 +705,7 @@ Do not classify this as a general "SavedVariables do not save" defect.
                                                                     cause**
 
   PPB-25            Settings window observed as   RUNTIME VERIFIED  DEFER
-                    non-draggable/stuck                             
+                    non-draggable/stuck
   -----------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
