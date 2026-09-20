@@ -2,6 +2,7 @@ local NS = TargetCopy
 NS.UI = {}
 local UI = NS.UI
 UI.selectedMark = 0
+UI.customMacro = false
 
 local f = CreateFrame("Frame","TargetCopyWindow",UIParent,"BackdropTemplate")
 UI.frame = f
@@ -135,6 +136,12 @@ end
 
 
 local ph=Txt("GameFontNormalSmall","PREVIEW"); ph:SetPoint("TOPLEFT",20,-358)
+
+UI.custom=CreateFrame("CheckButton",nil,f,"UICheckButtonTemplate")
+UI.custom:SetPoint("TOPRIGHT",-112,-350)
+UI.customLabel=Txt("GameFontHighlightSmall","Custom Macro")
+UI.customLabel:SetPoint("LEFT",UI.custom,"RIGHT",2,0)
+UI.custom:SetChecked(false)
 local bg=CreateFrame("Frame",nil,f,"BackdropTemplate"); bg:SetSize(305,62); bg:SetPoint("TOPLEFT",20,-374)
 if bg.SetBackdrop then
     bg:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=12,insets={left=3,right=3,top=3,bottom=3}})
@@ -158,6 +165,32 @@ function UI:BuildPreview()
     end
     return NS.Macro:Build("target",name,0)
 end
+function UI:RefreshCustomPreview()
+    local current=self.preview:GetText() or ""
+    local custom={}
+    local lineNumber=0
+
+    for line in string.gmatch(current.."\n","(.-)\n") do
+        lineNumber=lineNumber+1
+
+        -- First /target and optional following /tm are TargetCopy-managed.
+        if lineNumber == 1 and string.find(line,"^/target ") then
+            -- managed: discard old target line
+        elseif lineNumber == 2 and string.find(line,"^/tm %d+$") then
+            -- managed: discard old marker line
+        else
+            table.insert(custom,line)
+        end
+    end
+
+    local generated=self:BuildPreview()
+    if #custom > 0 then
+        generated=generated.."\n"..table.concat(custom,"\n")
+    end
+
+    self.preview:SetText(generated)
+end
+
 function UI:Refresh()
     local exists=NS.Unit:Exists("target")
     local name=exists and NS.Unit:GetName("target") or nil
@@ -171,7 +204,12 @@ function UI:Refresh()
         b:SetSelected(self.selectedMark == i)
     end
     for _,b in ipairs(self.markerButtons) do Enabled(b,true) end
-    local body=self:BuildPreview(); self.preview:SetText(body)
+    local body=self:BuildPreview()
+    if self.customMacro then
+        self:RefreshCustomPreview()
+    else
+        self.preview:SetText(body)
+    end
     Enabled(self.create,body~="" and NS.Compat:CanCreateMacro() and not NS.Compat:InCombat())
 end
 function UI:Show() f:Show(); self:Refresh() end
@@ -188,6 +226,16 @@ function UI:RestorePosition()
     local ok=pcall(function() f:SetPoint((w and w.point) or "CENTER",UIParent,(w and w.relativePoint) or "CENTER",(w and w.x) or 0,(w and w.y) or 0) end)
     if not ok then self:ResetPosition() end
 end
+
+UI.custom:SetScript("OnClick",function(self)
+    UI.customMacro=self:GetChecked() and true or false
+    if UI.customMacro then
+        Status("Custom Macro enabled - preview edits will be used")
+    else
+        UI:Refresh()
+        Status("Custom Macro disabled - generated preview restored")
+    end
+end)
 
 UI.copy:SetScript("OnClick",function()
     local name=UI:GetTarget(); if not name then Status("No target selected"); return end
@@ -206,7 +254,8 @@ UI.select:SetScript("OnClick",function()
 end)
 UI.create:SetScript("OnClick",function()
     local targetName=UI:GetTarget()
-    local ok,result,macroName=NS.Macro:CreateOrUpdate(UI:BuildPreview(),targetName)
+    local body=UI.customMacro and UI.preview:GetText() or UI:BuildPreview()
+    local ok,result,macroName=NS.Macro:CreateOrUpdate(body,targetName)
     if ok then Status("Macro "..string.lower(tostring(result))..": "..tostring(macroName))
     elseif result=="COMBAT" then Status("Create Macro unavailable during combat.")
     else Status("Create Macro failed: "..tostring(result)) end
