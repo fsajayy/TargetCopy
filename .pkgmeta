@@ -4,4 +4,6 @@ ignore:
   - .gitignore
   - README.md
   - RELEASE.md
+  - docs
+  - ppb.ps1
   - tests
