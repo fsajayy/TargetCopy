@@ -30,14 +30,8 @@ local function Btn(label,w,h)
     local b=CreateFrame("Button",nil,f,"UIPanelButtonTemplate"); b:SetSize(w or 140,h or 28); b:SetText(label); return b
 end
 
-local function RaidMarkerBtn(label,w,h,index)
-    local b=CreateFrame("Button",nil,f,"UIPanelButtonTemplate,SecureActionButtonTemplate")
-    b:SetSize(w or 140,h or 28)
-    b:SetText(label)
-    b:RegisterForClicks("AnyUp")
-    b:SetAttribute("type", "raidtarget")
-    b:SetAttribute("unit", "target")
-    b:SetAttribute("raidtarget", index)
+local function RaidMarkerBtn(label,w,h)
+    local b=Btn(label,w,h)
     return b
 end
 local function Enabled(b,v) if v then b:Enable(); b:SetAlpha(1) else b:Disable(); b:SetAlpha(.45) end end
@@ -56,24 +50,22 @@ local q=Txt("GameFontNormalSmall","QUICK ACTIONS"); q:SetPoint("TOPLEFT",20,-138
 UI.copy=Btn("Copy Name",145); UI.copy:SetPoint("TOPLEFT",20,-159)
 UI.target=Btn("Generate /target",145); UI.target:SetPoint("LEFT",UI.copy,"RIGHT",10,0)
 
-local r=Txt("GameFontNormalSmall","RAID MARKER"); r:SetPoint("TOPLEFT",20,-207)
+local r=Txt("GameFontNormalSmall","MACRO MARK"); r:SetPoint("TOPLEFT",20,-207)
 UI.markerButtons={}
 for i=1,8 do
-    local b=RaidMarkerBtn(NS.Marker.names[i],70,27,i)
+    local b=RaidMarkerBtn(NS.Marker.names[i],70,27)
     local row=math.floor((i-1)/4); local col=(i-1)%4
     b:SetPoint("TOPLEFT",20+col*77,-228-row*34)
-    b:SetScript("PostClick",function()
+    b:SetScript("OnClick",function()
         UI.selectedMark=i
-        Status(NS.Marker.names[i].." marker requested")
+        Status(NS.Marker.names[i].." selected for macro")
         UI:Refresh()
     end)
     UI.markerButtons[i]=b
 end
-UI.clear=RaidMarkerBtn("Clear Marker",145,26,0); UI.clear:SetPoint("TOPLEFT",20,-301)
-UI.clear:SetScript("PostClick",function()
-    Status("Clear marker requested")
-    UI:Refresh()
-end)
+
+local markerNote=Txt("GameFontHighlightSmall","Direct marking unavailable on this client.")
+markerNote:SetPoint("TOPLEFT",20,-301)
 
 local m=Txt("GameFontNormalSmall","MACRO BUILDER"); m:SetPoint("TOPLEFT",20,-345)
 UI.modeButtons={}
@@ -109,9 +101,7 @@ function UI:Refresh()
     self.meta:SetText(exists and NS.Unit:GetMeta("target") or "Select a unit to enable target actions.")
     self.mark:SetText("")
     Enabled(self.copy,exists and name~=nil); Enabled(self.target,exists and name~=nil)
-    local canMark=exists and NS.Compat:CanRaidMark()
-    for _,b in ipairs(self.markerButtons) do Enabled(b,canMark) end
-    Enabled(self.clear,canMark)
+    for _,b in ipairs(self.markerButtons) do Enabled(b,true) end
     local body=self:BuildPreview(); self.preview:SetText(body)
     Enabled(self.create,body~="" and NS.Compat:CanCreateMacro() and not NS.Compat:InCombat())
 end
