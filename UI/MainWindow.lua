@@ -6,7 +6,7 @@ UI.selectedMark = 0
 local f = CreateFrame("Frame","TargetCopyWindow",UIParent,"BackdropTemplate")
 UI.frame = f
 
-f:SetSize(350,550); f:SetPoint("CENTER"); f:SetFrameStrata("DIALOG")
+f:SetSize(350,525); f:SetPoint("CENTER"); f:SetFrameStrata("DIALOG")
 f:SetClampedToScreen(true); f:SetMovable(true); f:EnableMouse(true); f:RegisterForDrag("LeftButton"); f:Hide()
 
 if f.SetBackdrop then
@@ -104,7 +104,6 @@ UI.close=CreateFrame("Button",nil,f,"UIPanelCloseButton"); UI.close:SetPoint("TO
 local h=Txt("GameFontNormalSmall","CURRENT TARGET"); h:SetPoint("TOPLEFT",20,-58)
 UI.name=Txt("GameFontHighlightLarge","No target selected"); UI.name:SetPoint("TOPLEFT",20,-79); UI.name:SetWidth(275); UI.name:SetJustifyH("LEFT"); UI.name:SetWordWrap(false)
 UI.meta=Txt("GameFontHighlightSmall",""); UI.meta:SetPoint("TOPLEFT",20,-103)
-UI.mark=Txt("GameFontNormalLarge",""); UI.mark:SetPoint("TOPRIGHT",-25,-79)
 
 local q=Txt("GameFontNormalSmall","QUICK ACTIONS"); q:SetPoint("TOPLEFT",20,-138)
 UI.copy=Btn("Copy Name",145); UI.copy:SetPoint("TOPLEFT",20,-159)
@@ -134,11 +133,9 @@ for i=1,8 do
     UI.markerButtons[i]=b
 end
 
-local markerNote=Txt("GameFontHighlightSmall","Selected marker is added to the generated macro.")
-markerNote:SetPoint("TOPLEFT",20,-350)
 
-local ph=Txt("GameFontNormalSmall","PREVIEW"); ph:SetPoint("TOPLEFT",20,-375)
-local bg=CreateFrame("Frame",nil,f,"BackdropTemplate"); bg:SetSize(305,62); bg:SetPoint("TOPLEFT",20,-391)
+local ph=Txt("GameFontNormalSmall","PREVIEW"); ph:SetPoint("TOPLEFT",20,-358)
+local bg=CreateFrame("Frame",nil,f,"BackdropTemplate"); bg:SetSize(305,62); bg:SetPoint("TOPLEFT",20,-374)
 if bg.SetBackdrop then
     bg:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=12,insets={left=3,right=3,top=3,bottom=3}})
     bg:SetBackdropColor(.03,.03,.03,.9)
@@ -147,7 +144,7 @@ UI.preview=CreateFrame("EditBox",nil,bg); UI.preview:SetPoint("TOPLEFT",8,-7); U
 UI.preview:SetMultiLine(true); UI.preview:SetAutoFocus(false); UI.preview:SetFontObject("ChatFontNormal"); UI.preview:SetMaxLetters(255)
 UI.preview:SetScript("OnEscapePressed",function(self) self:ClearFocus() end)
 
-UI.select=Btn("Select / Copy",145); UI.select:SetPoint("TOPLEFT",20,-465)
+UI.select=Btn("Select / Copy",145); UI.select:SetPoint("TOPLEFT",20,-448)
 UI.create=Btn("Create Macro",145); UI.create:SetPoint("LEFT",UI.select,"RIGHT",10,0)
 local sep=f:CreateTexture(nil,"ARTWORK"); sep:SetColorTexture(.35,.28,.18,.65); sep:SetSize(305,1); sep:SetPoint("BOTTOMLEFT",20,31)
 UI.status=Txt("GameFontHighlightSmall","Ready"); UI.status:SetPoint("BOTTOMLEFT",20,14); UI.status:SetWidth(305); UI.status:SetJustifyH("LEFT")
@@ -166,7 +163,6 @@ function UI:Refresh()
     local name=exists and NS.Unit:GetName("target") or nil
     self.name:SetText(name or "No target selected")
     self.meta:SetText(exists and NS.Unit:GetMeta("target") or "Select a unit to enable target actions.")
-    self.mark:SetText("")
     Enabled(self.copy,exists and name~=nil); Enabled(self.target,exists and name~=nil)
     Enabled(self.noMark,true)
     self.noMark:LockHighlight()
