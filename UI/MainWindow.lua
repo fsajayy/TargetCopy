@@ -108,7 +108,7 @@ UI.mark=Txt("GameFontNormalLarge",""); UI.mark:SetPoint("TOPRIGHT",-25,-79)
 
 local q=Txt("GameFontNormalSmall","QUICK ACTIONS"); q:SetPoint("TOPLEFT",20,-138)
 UI.copy=Btn("Copy Name",145); UI.copy:SetPoint("TOPLEFT",20,-159)
-UI.target=Btn("Generate /target",145); UI.target:SetPoint("LEFT",UI.copy,"RIGHT",10,0)
+UI.target=Btn("Copy /target",145); UI.target:SetPoint("LEFT",UI.copy,"RIGHT",10,0)
 
 local r=Txt("GameFontNormalSmall","MACRO MARK"); r:SetPoint("TOPLEFT",20,-207)
 
@@ -198,7 +198,12 @@ UI.copy:SetScript("OnClick",function()
     UI.preview:SetText(name); UI.preview:SetFocus(); UI.preview:HighlightText(); Status("Name selected - press Ctrl+C")
 end)
 UI.target:SetScript("OnClick",function()
-    UI.mode="target"; UI:Refresh(); UI.preview:SetFocus(); UI.preview:HighlightText(); Status("/target selected - press Ctrl+C")
+    local name=UI:GetTarget()
+    if not name then Status("No target selected"); return end
+    UI.preview:SetText("/target "..name)
+    UI.preview:SetFocus()
+    UI.preview:HighlightText()
+    Status("/target selected - press Ctrl+C")
 end)
 UI.select:SetScript("OnClick",function()
     UI:Refresh(); UI.preview:SetFocus(); UI.preview:HighlightText(); Status("Macro selected - press Ctrl+C")
