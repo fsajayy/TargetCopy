@@ -19,8 +19,8 @@
 Use annotated SemVer tags:
 
 ```bash
-git tag -a v1.0.0-beta.1 -m "TargetCopy 1.0.0-beta.1"
-git push origin v1.0.0-beta.1
+git tag -a v1.0.0-beta.4 -m "TargetCopy v1.0.0-beta.4"
+git push origin v1.0.0-beta.4
 ```
 
 The GitHub Actions workflow packages tagged builds with `BigWigsMods/packager@v2`.

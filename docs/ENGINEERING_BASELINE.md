@@ -1035,53 +1035,55 @@ should be recorded as new evidence against the new release candidate.
 
 ## 15. Current Engineering Checkpoint
 
-```text
-PPB Phase 1 — Read-Only Baseline Audit             PASS
-PPB Phase 2 — Dependency / Call-Graph Audit        PASS / CLOSED
-PPB Phase 3 — Compatibility & Persistence          CLOSED
-PPB Phase 4 — Risk Disposition & Next-Beta Plan    CLOSED
+PPB Phase 1 - Read-Only Baseline Audit             PASS
+PPB Phase 2 - Dependency / Call-Graph Audit        PASS / CLOSED
+PPB Phase 3 - Compatibility & Persistence          CLOSED
+PPB Phase 4 - Risk Disposition & Next-Beta Plan    CLOSED
 
 Published baseline
 v1.0.0-beta.3 / 267f858b43d99b46bd868c686a1926796d3c936a
 
-Beta.4 compatibility investigation
+PPB-23 - Raid Marker Compatibility
+- RUNTIME VERIFIED compatibility failure in published direct-marker path
+- direct SetRaidTarget path blocked by client protection
+- secure experiments did not establish a safe direct action
+- normal player-created /tm macros work
+- beta.4 uses marker selection for generated macros
 
-PPB-23 — Raid Marker Compatibility
-→ RUNTIME VERIFIED compatibility failure
-→ published secure raidtarget path fails silently
-→ direct SetRaidTarget path blocked by client protection
-→ secure macro experiments also failed
-→ normal player-created /tm macro works
-→ no safe addon-side production mechanism established
-→ no unsafe workaround adopted
+PPB-24 - SavedVariables Persistence
+- RUNTIME VERIFIED load/persistence divergence
+- runtime settings mutation and disk serialization work
+- persisted TargetCopyDB is unavailable before initialization
+- MergeDefaults eliminated as reset cause
+- deferred PLAYER_LOGIN initialization also failed
+- no TargetCopy persistence hack adopted
+- treated as a WoW Forever client compatibility limitation
 
-PPB-24 — SavedVariables Persistence
-→ RUNTIME VERIFIED load/persistence divergence
-→ runtime settings mutation works
-→ runtime state can be serialized to TargetCopy.lua
-→ persisted TargetCopyDB is unavailable before InitDB on reload/startup
-→ MergeDefaults eliminated as reset cause
-→ deferred initialization through PLAYER_LOGIN also failed
-→ no TargetCopy persistence hack adopted
-→ treated as current client compatibility limitation
+Beta.4 implementation
+- SavedVariables lifecycle diagnostics integrated into /tc debug
+- PPB PowerShell harness added
+- direct marker controls replaced by macro marker selection
+- macro workflow simplified to target + optional marker
+- compact native marker selector added
+- Quick Actions clarified
+- main window layout polished
+- optional Custom Macro mode added
+- final beta.4 regression gate: 9/9 PASS
 
-Beta.4 engineering changes
-→ SavedVariables lifecycle snapshots integrated into /tc debug
-→ PPB PowerShell harness added
-→ temporary marker/deferred-init experiments removed
-→ repository/runtime tracked files verified matching
-→ focused regression gate: 8/8 PASS
-
-Engineering checkpoint commit
-0f9f9de — chore: add Forever compatibility diagnostics and PPB harness
+Implementation checkpoints
+0f9f9de - compatibility diagnostics and PPB harness
+d5acd7f - macro-based marker selection
+d2d3556 - simplified macro workflow and marker selector
+f62a2dc - Quick Actions refinement
+e7f71a2 - compact main window
+4164393 - optional Custom Macro preview
 
 Release disposition
-→ v1.0.0-beta.3 remains the immutable published baseline
-→ 0f9f9de is an engineering/compatibility checkpoint
-→ no beta.4 release has been declared from this checkpoint
-```
+- v1.0.0-beta.3 remains the immutable published baseline
+- beta.4 feature implementation is CLOSED
+- beta.4 release preparation is ACTIVE
+- beta.4 has not yet been tagged or published
 
-The Post-Publish Baseline audit and beta.4 compatibility investigation are
-closed at this checkpoint. Future work should treat the findings above as
-known compatibility constraints and create new evidence if client behavior
-changes.
+The Post-Publish Baseline audit is closed. The beta.4 implementation and
+final regression gate are complete. PPB-23 and PPB-24 remain documented
+compatibility constraints unless new runtime evidence changes them.
